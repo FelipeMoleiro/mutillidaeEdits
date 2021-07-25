@@ -292,6 +292,20 @@
     		echo format("Executed query 'CREATE TABLE' with result ".$lQueryResult,"S");
     	}// end if
 
+
+        $lQueryString = "
+        CREATE TABLE IF NOT EXISTS ip (
+              address char(16) COLLATE utf8_bin NOT NULL,
+              timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+        $lQueryResult = $MySQLHandler->executeQuery($lQueryString);
+        if (!$lQueryResult) {
+            $lErrorDetected = TRUE;
+        }else{
+            echo format("Executed query 'CREATE TABLE' with result ".$lQueryResult,"S");
+        }// end if
+
+
     	$lQueryString =
     			'CREATE TABLE page_hints('.
     				'page_name VARCHAR(64) NOT NULL, '.
