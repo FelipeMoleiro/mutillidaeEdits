@@ -46,6 +46,7 @@
 	   	$cAUTHENTICATION_SUCCESSFUL = 3;
 	   	$cAUTHENTICATION_EXCEPTION_OCCURED = 4;
 	   	$cUSERNAME_OR_PASSWORD_INCORRECT = 5;
+	   	$cAttempsExceded = 6;
 
 	   	$lAuthenticationAttemptResult = $cUNSURE;
 	   	$lAuthenticationAttemptResultFound = FALSE;
@@ -54,35 +55,64 @@
 
    		logLoginAttempt("User {$lUsername} attempting to authenticate");
 
-   		if (!$SQLQueryHandler->accountExists($lUsername)){
-   		    if ($lConfidentialityRequired){
-   		        $lAuthenticationAttemptResult = $cUSERNAME_OR_PASSWORD_INCORRECT;
-   		    }else{
-   		        $lAuthenticationAttemptResult = $cACCOUNT_DOES_NOT_EXIST;
-   		    }// end if
-   			$lKeepGoing = FALSE;
-   			logLoginAttempt("Login Failed: Account {$lUsername} does not exist");
-   		}// end if accountExists
 
-		if ($lKeepGoing){
-   			if (!$SQLQueryHandler->authenticateAccount($lUsername, $lPassword)){
-   			    if ($lConfidentialityRequired){
-   			        $lAuthenticationAttemptResult = $cUSERNAME_OR_PASSWORD_INCORRECT;
-   			    }else{
-   			        $lAuthenticationAttemptResult = $cPASSWORD_INCORRECT;
-   			    }// end if
-	   			$lKeepGoing = FALSE;
-	   			logLoginAttempt("Login Failed: Password for {$lUsername} incorrect");
-	   		}//end if authenticateAccount
-   		}//end if $lKeepGoing
-
-		$lQueryResult = $SQLQueryHandler->getUserAccount($lUsername, $lPassword);
-
+   		
+   		$ip = $_SERVER["REMOTE_ADDR"];
+   		$res = $SQLQueryHandler->insertLoginAttempt($ip);
+   		$lQueryResult = $SQLQueryHandler->checkCanLogin($ip);
+   		$limitReach = 0;
 		if (isset($lQueryResult->num_rows)){
-   			if ($lQueryResult->num_rows > 0) {
-	   			$lAuthenticationAttemptResultFound = TRUE;
-   			}//end if
+			if ($lQueryResult->num_rows > 0) {
+   				$resultado = $lQueryResult->fetch_object();
+   				$num_acc = $resultado->num_acc;
+   				if($num_acc > 20){ //mais de 20 tentativas de acessos nos ultimos 10 minutos
+   					logLoginAttempt("More than 20 attempts in the last 20 minutes");
+   					$limitReach = 1;
+   				}else{
+   					logLoginAttempt("Number Attempts in the last 10 minutes: {$num_acc}");
+ 
+   				}
+			}//end if
 		}//end if
+
+
+		if($limitReach == 1){
+			$lAuthenticationAttemptResult = $cAttempsExceded;
+		}else{
+			if (!$SQLQueryHandler->accountExists($lUsername)){
+	   		    if ($lConfidentialityRequired){
+	   		        $lAuthenticationAttemptResult = $cUSERNAME_OR_PASSWORD_INCORRECT;
+	   		    }else{
+	   		        $lAuthenticationAttemptResult = $cACCOUNT_DOES_NOT_EXIST;
+	   		    }// end if
+	   			$lKeepGoing = FALSE;
+	   			logLoginAttempt("Login Failed: Account {$lUsername} does not exist");
+	   		}// end if accountExists
+
+			if ($lKeepGoing){
+	   			if (!$SQLQueryHandler->authenticateAccount($lUsername, $lPassword)){
+	   			    if ($lConfidentialityRequired){
+	   			        $lAuthenticationAttemptResult = $cUSERNAME_OR_PASSWORD_INCORRECT;
+	   			    }else{
+	   			        $lAuthenticationAttemptResult = $cPASSWORD_INCORRECT;
+	   			    }// end if
+		   			$lKeepGoing = FALSE;
+		   			logLoginAttempt("Login Failed: Password for {$lUsername} incorrect");
+		   		}//end if authenticateAccount
+	   		}//end if $lKeepGoing
+
+			$lQueryResult = $SQLQueryHandler->getUserAccount($lUsername, $lPassword);
+
+			if (isset($lQueryResult->num_rows)){
+	   			if ($lQueryResult->num_rows > 0) {
+		   			$lAuthenticationAttemptResultFound = TRUE;
+	   			}//end if
+			}//end if
+		}
+
+		
+
+
 
 		if ($lAuthenticationAttemptResultFound){
 			$lRecord = $lQueryResult->fetch_object();

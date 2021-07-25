@@ -156,7 +156,8 @@
    	var cAUTHENTICATION_SUCCESSFUL = 3;
    	var cAUTHENTICATION_EXCEPTION_OCCURED = 4;
    	var cUSERNAME_OR_PASSWORD_INCORRECT = 5;
-   	
+   	var cAttempsExceded = 6;
+
    	var lMessage = "";
    	var lAuthenticationFailed = "FALSE";
    	
@@ -175,6 +176,9 @@
    		break;
    		case cUSERNAME_OR_PASSWORD_INCORRECT: 
    	   		lMessage="Username or password incorrect"; lAuthenticationFailed = "TRUE"; 
+   		break;
+   		case cAttempsExceded: 
+   	   		lMessage="Number of attempts exceded, try again later"; lAuthenticationFailed = "TRUE"; 
    		break;
    	};
 

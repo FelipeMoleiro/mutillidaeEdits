@@ -335,6 +335,7 @@ class SQLQueryHandler {
 	}//end public function getUserAccountByID
 
 	public function getUserAccount($pUsername, $pPassword){
+
    		/*
   		 * Note: While escaping works ok in some case, it is not the best defense.
  		 * Using stored procedures is a much stronger defense.
@@ -469,5 +470,26 @@ class SQLQueryHandler {
 		$lQueryString  = "TRUNCATE TABLE hitlog;";
 		return $this->mMySQLHandler->executeQuery($lQueryString);
 	}// end function truncateHitLog
+
+
+	public function insertLoginAttempt($ip){
+
+		if ($this->stopSQLInjection == TRUE){
+			$ip = $this->mMySQLHandler->escapeDangerousCharacters($ip);
+		}// end if
+
+		$lQueryString  = "INSERT INTO ip (address ,timestamp) VALUES ('".$ip."',CURRENT_TIMESTAMP);";
+		return $this->mMySQLHandler->executeQuery($lQueryString);
+	}
+	
+	
+	public function checkCanLogin($ip){
+		if ($this->stopSQLInjection == TRUE){
+			$ip = $this->mMySQLHandler->escapeDangerousCharacters($ip);
+		}// end if
+
+		$lQueryString = "SELECT COUNT(*) AS num_acc FROM ip WHERE address LIKE '".$ip."' AND timestamp > (now() - interval 10 minute);";
+		return $this->mMySQLHandler->executeQuery($lQueryString);
+	}
 
 }// end class
