@@ -46,8 +46,17 @@
 		    $_SESSION['logged_in_usersignature'] = '';
 			$_SESSION['uid'] = '';
 			$_SESSION['is_admin'] = 'FALSE';
-	    	setcookie("uid", "deleted", time()-3600);
-	    	setcookie("username", "deleted", time()-3600);
+
+			$l_cookie_options = array (
+			    'expires' => 0,              // 0 means session cookie
+			    'path' => '/',               // '/' means entire domain
+			    //'domain' => '.example.com', // default is current domain
+			    'secure' => FALSE,           // true or false
+			    'httponly' => FALSE,         // true or false
+			    'samesite' => 'Lax'          // None || Lax  || Strict
+			);
+	    	setcookie("uid", "deleted",$l_cookie_options);
+	    	setcookie("username", "deleted",$l_cookie_options);
 	    	header("Location: index.php?page=login.php&popUpNotificationCode=LOU1", TRUE, 302);
 	    	exit(0);
 	    break;//case "logout"

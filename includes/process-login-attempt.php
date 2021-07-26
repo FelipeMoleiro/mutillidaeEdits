@@ -102,7 +102,6 @@
 	   		}//end if $lKeepGoing
 
 			$lQueryResult = $SQLQueryHandler->getUserAccount($lUsername, $lPassword);
-
 			if (isset($lQueryResult->num_rows)){
 	   			if ($lQueryResult->num_rows > 0) {
 		   			$lAuthenticationAttemptResultFound = TRUE;

@@ -126,15 +126,14 @@
 				$lBlogEntry = $_REQUEST["blog_entry"];
 			}// end if
 
-			/* Some dangerous markup allowed. Here we tokenize it for storage. */
-			if ($lTokenizeAllowedMarkup){
-				$lBlogEntry = str_ireplace('<b>', BOLD_STARTING_TAG, $lBlogEntry);
-				$lBlogEntry = str_ireplace('</b>', BOLD_ENDING_TAG, $lBlogEntry);
-				$lBlogEntry = str_ireplace('<i>', ITALIC_STARTING_TAG, $lBlogEntry);
-				$lBlogEntry = str_ireplace('</i>', ITALIC_ENDING_TAG, $lBlogEntry);
-				$lBlogEntry = str_ireplace('<u>', UNDERLINE_STARTING_TAG, $lBlogEntry);
-				$lBlogEntry = str_ireplace('</u>', UNDERLINE_ENDING_TAG, $lBlogEntry);				
-			}// end if $lTokenizeAllowedMarkup			
+
+			$lBlogEntry = str_ireplace('<b>', BOLD_STARTING_TAG, $lBlogEntry);
+			$lBlogEntry = str_ireplace('</b>', BOLD_ENDING_TAG, $lBlogEntry);
+			$lBlogEntry = str_ireplace('<i>', ITALIC_STARTING_TAG, $lBlogEntry);
+			$lBlogEntry = str_ireplace('</i>', ITALIC_ENDING_TAG, $lBlogEntry);
+			$lBlogEntry = str_ireplace('<u>', UNDERLINE_STARTING_TAG, $lBlogEntry);
+			$lBlogEntry = str_ireplace('</u>', UNDERLINE_ENDING_TAG, $lBlogEntry);				
+	
 			
 			// weak server-side input validation. not good enough.
 			if(strlen($lBlogEntry) > 0){
@@ -289,15 +288,11 @@
 	    	
 	    	$lRowNumber++;
 	    	
-			if(!$lEncodeOutput){
-				$lBloggerName = $lRecord->blogger_name;
-				$lDate = $lRecord->date;
-				$lComment = $lRecord->comment;
-			}else{
-				$lBloggerName = $Encoder->encodeForHTML($lRecord->blogger_name);
-				$lDate = $Encoder->encodeForHTML($lRecord->date);
-				$lComment = $Encoder->encodeForHTML($lRecord->comment);
-			}// end if
+
+			$lBloggerName = $Encoder->encodeForHTML($lRecord->blogger_name);
+			$lDate = $Encoder->encodeForHTML($lRecord->date);
+			$lComment = $Encoder->encodeForHTML($lRecord->comment);
+
 
 			/* Some dangerous markup allowed. Here we restore the tokenized output. 
 			 * Note that using GUIDs as tokens works well because they are 

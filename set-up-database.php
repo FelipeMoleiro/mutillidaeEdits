@@ -183,6 +183,22 @@
     		echo "<div class=\"database-success-message\">Executed query 'INSERT INTO TABLE' with result ".$lQueryResult."</div>";
     	}// end if
 
+
+
+        $lQueryString = "CREATE PROCEDURE busca_usuario (IN usernameIn text,IN passwordIn text)
+                        BEGIN
+                            SELECT * FROM accounts WHERE username = usernameIn and password=passwordIn;
+
+                        END";
+        $lQueryResult = $MySQLHandler->executeQuery($lQueryString);
+        if (!$lQueryResult) {
+            $lErrorDetected = TRUE;
+        }else{
+            echo "<div class=\"database-success-message\">Executed query 'CREATE PROCEDURE' with result ".$lQueryResult."</div>";
+        }// end if
+
+
+
     	$lQueryString ="INSERT INTO `blogs_table` (`cid`, `blogger_name`, `comment`, `date`) VALUES
     		(1, 'adrian', 'Well, I''ve been working on this for a bit. Welcome to my crappy blog software. :)', '2009-03-01 22:26:12'),
     		(2, 'adrian', 'Looks like I got a lot more work to do. Fun, Fun, Fun!!!', '2009-03-01 22:26:54'),

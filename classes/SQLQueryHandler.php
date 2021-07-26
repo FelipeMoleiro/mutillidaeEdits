@@ -336,22 +336,18 @@ class SQLQueryHandler {
 
 	public function getUserAccount($pUsername, $pPassword){
 
-   		/*
-  		 * Note: While escaping works ok in some case, it is not the best defense.
- 		 * Using stored procedures is a much stronger defense.
- 		 */
+		$pUsername = $this->mMySQLHandler->escapeDangerousCharacters($pUsername);
+		$pPassword = $this->mMySQLHandler->escapeDangerousCharacters($pPassword);
 
-		if ($this->stopSQLInjection == TRUE){
-			$pUsername = $this->mMySQLHandler->escapeDangerousCharacters($pUsername);
-			$pPassword = $this->mMySQLHandler->escapeDangerousCharacters($pPassword);
-		}// end if
+		$lQueryString = "CALL busca_usuario(?,?)";
+		$conn = $this->mMySQLHandler->get_connection();
 
-		$lQueryString =
-			"SELECT * FROM accounts
-			WHERE username='".$pUsername.
-			"' AND password='".$pPassword."'";
+		$stmt = $conn->prepare($lQueryString);
+		$stmt->bind_param('ss', $pUsername,$pPassword);
+		$stmt->execute();
+		$result = $stmt->get_result();
 
-		return $this->mMySQLHandler->executeQuery($lQueryString);
+		return $result;
 	}//end public function getUserAccount
 
 	/* -----------------------------------------

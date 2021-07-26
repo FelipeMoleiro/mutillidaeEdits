@@ -328,4 +328,8 @@ class MySQLHandler {
 		$this->doCloseDatabaseConnection();
 	}// end public function closeDatabaseConnection
 
+	public function get_connection(){
+		return $this->mMySQLConnection;
+	}
+
 }// end class

@@ -1,8 +1,8 @@
 ErrorDocument 403 "By default, Mutillidae only allows access from non-routable network addresses. Edit the .htaccess file to change this behavior.
 Order Deny,Allow
-Deny from all
+##Deny from all
 
-## Allow access from localhost
+
 Allow from 127.0.0.0/8
 Allow from localhost
 
